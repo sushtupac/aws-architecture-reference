@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AWS Architecture Patterns — Reference Guide</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <h1>AWS Architecture Patterns</h1>
+      <p class="tagline">A reference guide for common cloud infrastructure patterns</p>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>Serverless Web Application</h2>
+      <div class="pattern-card">
+        <div class="arch-flow">
+          <span class="box">S3</span>
+          <span class="arrow">→</span>
+          <span class="box">CloudFront</span>
+          <span class="arrow">→</span>
+          <span class="box">API Gateway</span>
+          <span class="arrow">→</span>
+          <span class="box">Lambda</span>
+          <span class="arrow">→</span>
+          <span class="box">DynamoDB</span>
+        </div>
+        <p>Static assets served from S3 via CloudFront CDN. API requests routed through
+        API Gateway to Lambda functions. DynamoDB provides single-digit millisecond
+        latency at any scale. No servers to manage.</p>
+        <div class="use-cases">
+          <span class="tag">E-commerce</span>
+          <span class="tag">REST APIs</span>
+          <span class="tag">Mobile backends</span>
+        </div>
+        <table>
+          <tr><th>Service</th><th>Purpose</th><th>Free Tier</th></tr>
+          <tr><td>S3</td><td>Static file hosting</td><td>5GB storage</td></tr>
+          <tr><td>CloudFront</td><td>CDN + HTTPS</td><td>1TB transfer/month</td></tr>
+          <tr><td>API Gateway</td><td>HTTP routing</td><td>1M requests/month</td></tr>
+          <tr><td>Lambda</td><td>Compute</td><td>1M invocations/month</td></tr>
+          <tr><td>DynamoDB</td><td>NoSQL database</td><td>25GB storage</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Data Lake Pipeline</h2>
+      <div class="pattern-card">
+        <div class="arch-flow">
+          <span class="box">Data sources</span>
+          <span class="arrow">→</span>
+          <span class="box">S3 raw</span>
+          <span class="arrow">→</span>
+          <span class="box">Glue ETL</span>
+          <span class="arrow">→</span>
+          <span class="box">S3 processed</span>
+          <span class="arrow">→</span>
+          <span class="box">Athena</span>
+        </div>
+        <p>Raw data lands in S3. AWS Glue crawlers catalogue the schema automatically.
+        Glue ETL jobs transform and clean the data. Athena enables SQL queries directly
+        on S3 — no database server required. Pay only per query.</p>
+        <div class="use-cases">
+          <span class="tag">Analytics</span>
+          <span class="tag">BI reporting</span>
+          <span class="tag">Log analysis</span>
+        </div>
+        <table>
+          <tr><th>Service</th><th>Purpose</th><th>Cost model</th></tr>
+          <tr><td>S3</td><td>Data lake storage</td><td>$0.023/GB/month</td></tr>
+          <tr><td>Glue</td><td>ETL and cataloguing</td><td>$0.44/DPU-hour</td></tr>
+          <tr><td>Athena</td><td>SQL on S3</td><td>$5 per TB scanned</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Real-time Streaming Pipeline</h2>
+      <div class="pattern-card">
+        <div class="arch-flow">
+          <span class="box">Producer</span>
+          <span class="arrow">→</span>
+          <span class="box">Kinesis</span>
+          <span class="arrow">→</span>
+          <span class="box">Lambda</span>
+          <span class="arrow">→</span>
+          <span class="box">DynamoDB</span>
+        </div>
+        <p>Events streamed into Kinesis Data Streams. Lambda consumers process each
+        record in real time. Results stored in DynamoDB for low-latency reads.
+        Handles millions of events per second with automatic scaling.</p>
+        <div class="use-cases">
+          <span class="tag">IoT telemetry</span>
+          <span class="tag">Clickstream</span>
+          <span class="tag">Fraud detection</span>
+        </div>
+        <table>
+          <tr><th>Service</th><th>Purpose</th><th>Key metric</th></tr>
+          <tr><td>Kinesis</td><td>Event streaming</td><td>1MB/s per shard</td></tr>
+          <tr><td>Lambda</td><td>Stream processing</td><td>Sub-second latency</td></tr>
+          <tr><td>DynamoDB</td><td>Results store</td><td>&lt;10ms reads</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>ML Model Deployment</h2>
+      <div class="pattern-card">
+        <div class="arch-flow">
+          <span class="box">S3 data</span>
+          <span class="arrow">→</span>
+          <span class="box">SageMaker train</span>
+          <span class="arrow">→</span>
+          <span class="box">Model registry</span>
+          <span class="arrow">→</span>
+          <span class="box">Endpoint</span>
+          <span class="arrow">→</span>
+          <span class="box">API Gateway</span>
+        </div>
+        <p>Training data stored in S3. SageMaker manages the full ML lifecycle —
+        training, evaluation, and deployment. Models versioned in the model registry.
+        Deployed as a real-time endpoint behind API Gateway for production use.</p>
+        <div class="use-cases">
+          <span class="tag">Inference APIs</span>
+          <span class="tag">MLOps</span>
+          <span class="tag">A/B testing</span>
+        </div>
+        <table>
+          <tr><th>Service</th><th>Purpose</th><th>Key feature</th></tr>
+          <tr><td>SageMaker</td><td>Train + deploy</td><td>Managed ML platform</td></tr>
+          <tr><td>Model registry</td><td>Versioning</td><td>Approval workflows</td></tr>
+          <tr><td>Endpoints</td><td>Inference</td><td>Auto-scaling</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="security">
+      <h2>Security Best Practices</h2>
+      <div class="practices-grid">
+        <div class="practice">
+          <h3>Least privilege IAM</h3>
+          <p>Every service and user gets only the permissions they need. Use IAM roles, not access keys, for service-to-service communication.</p>
+        </div>
+        <div class="practice">
+          <h3>Private S3 buckets</h3>
+          <p>Never make S3 buckets public. Use CloudFront with Origin Access Control or pre-signed URLs for controlled access.</p>
+        </div>
+        <div class="practice">
+          <h3>Encrypt everything</h3>
+          <p>Enable S3 server-side encryption, DynamoDB encryption at rest, and enforce HTTPS on all endpoints.</p>
+        </div>
+        <div class="practice">
+          <h3>CloudWatch monitoring</h3>
+          <p>Set up alarms for Lambda errors, API Gateway 5xx rates, and unusual S3 access patterns.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Built with HTML &amp; CSS · Hosted on AWS S3 + CloudFront · 
+    <a href="https://github.com/yourusername/aws-architecture-reference">View source on GitHub</a></p>
+  </footer>
+
+</body>
+</html>
